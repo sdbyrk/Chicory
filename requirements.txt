@@ -1,0 +1,7 @@
+Django~=3.0.7
+pandas
+requests
+BeautifulSoup4
+Pillow
+django-crispy-forms
+django-notifications-hq
