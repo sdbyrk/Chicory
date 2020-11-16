@@ -1,0 +1,22 @@
+<img src="{{ movie.poster }}">
+<br>
+{{ movie.title }}
+<br>
+
+<p>Yönetmen</p>
+{% for director in movie.director.all %}
+	<a href="{% url 'director' pk=director.pk %}">{{ director.name }}</a>
+	<br>
+{% endfor %}
+
+<p>Oyuncular</p>
+{% for actor in movie.cast.all %}
+	<a href="{% url 'actor' pk=actor.pk %}">{{ actor.name }}</a>
+	<br>
+{% endfor %}
+
+<p>Tür</p>
+{% for genre in movie.genre.all %}
+	<a href="{% url 'genre' pk=genre.pk %}">{{ genre.name }}</a>
+	<br>
+{% endfor %}
