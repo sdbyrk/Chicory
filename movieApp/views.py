@@ -1,7 +1,13 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Actor, Director, Genre, Movie
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.http import HttpResponseRedirect
 
 import os.path
+
+from .models import Actor, Director, Genre, Movie
+from user.models import Member, Relationship
+from .forms import RecommendForm
 
 
 #Get data with BeautifulSoup
@@ -159,8 +165,17 @@ def index(request):
 
 def movie_detail(request, pk):
 	movie = get_object_or_404(Movie, pk=pk)
-
-	return render(request, "movieApp/movie_detail.html", {"movie":movie})
+	watchedMovies = []
+	watchLaters = []
+	member = None
+	form = None
+	if request.user.is_authenticated:
+		member = Member.objects.filter(user=request.user).first()
+	if member:
+		if request.user.is_authenticated:
+			watchedMovies = member.watchedMovie.all()
+			watchLaters = Member.objects.filter(user=request.user).first().watchLater.all()
+	return render(request, "movieApp/movie_detail.html", {"form":form, "movie":movie, "watchedMovies":watchedMovies, "watchLaters":watchLaters})
 
 # Actor's movies
 def actorMovies(request, pk):
@@ -183,3 +198,150 @@ def genreMovies(request, pk):
 
 	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies})
 
+def searchText(request):
+	query = request.GET.get('q')
+	search = True
+	movies = Movie.objects.all().filter(title__icontains=query)
+	actors = Actor.objects.all().filter(name__icontains=query)
+	directors = Director.objects.all().filter(name__icontains=query)
+	users = User.objects.exclude(username=request.user.username).all().filter(username__icontains=query)
+	print(users)
+	watchedMovies = []
+	return render(request, "movieApp/search_result.html", {"search": search, "movies":movies, "actors": actors, "directors": directors, "watchedMovies":watchedMovies, "users": users})
+
+#Recommending a movie to a followed user
+def recommendPage(request, pk):
+	print("Hello world")
+	member = Member.objects.filter(user=request.user).first()
+	movie = get_object_or_404(Movie, pk=pk)
+	relation = Relationship.objects.filter(member=member).first()
+	followedUsers = None
+	if relation:
+		followedUsers = relation.followed.all()
+	
+	if request.method == 'POST':
+		form = RecommendForm(request.POST) 
+		form.fields["followed"].queryset = followedUsers
+		if form.is_valid():
+			friend = Member.objects.filter(user__username=form.cleaned_data['followed']).first()
+			person = User.objects.filter(username=form.cleaned_data['followed']).first()
+			notify.send (request.user, recipient = person, action_object=movie, verb = "filmini önerdi.")
+			message = person.username + " kişisine " + movie.title + " filmini önerdiniz."
+			messages.add_message(request, messages.SUCCESS, message)
+			
+			return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+	else:
+		form = RecommendForm()
+		form.fields["followed"].queryset = followedUsers
+	return render(request, "movieApp/recommend_page.html", {"followedUsers": followedUsers, "form": form, "movie": movie})
+
+
+def recommendMovie(request, pk):
+	notification = request.user.notifications.filter(pk=pk).first()
+	movie = Movie.objects.filter(title=notification.action_object).first()
+	return movie_detail(request, movie.pk)
+
+#Add/remove the movie from the watchedMovies
+def watched(request, pk):
+	movie = get_object_or_404(Movie, pk=pk)
+	member = Member.objects.filter(user=request.user).first()
+
+	if not member:
+		member = Member.objects.create(user=request.user)
+
+	watchedMovies = member.watchedMovie.all()
+	watchLaters = member.watchLater.all()
+	recommendedMovies = Member.objects.filter(user=request.user).first().recommendedMovie.all()
+	st = "/movie/" + str(pk) + "/"
+	if movie not in watchedMovies:
+		if movie in watchLaters:
+			member.watchLater.remove(movie)
+			watchLaters = member.watchLater.all()
+		if movie in recommendedMovies:
+			member.recommendedMovie.remove(movie)
+		member.watchedMovie.add(movie)
+		watchedMovies = member.watchedMovie.all()
+	else:
+		member.watchedMovie.remove(movie)
+		watchedMovies = member.watchedMovie.all()
+	recommend(request)
+	return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+#Add/remove the movie from the watchLater
+def later(request, pk):
+	movie = get_object_or_404(Movie, pk=pk)
+	member = Member.objects.filter(user=request.user).first()
+	watchLaters = member.watchLater.all()
+	recommendedMovies = member.recommendedMovie.all()
+	st = "/movie/" + str(pk) + "/"
+	if movie not in watchLaters:
+		member.watchLater.add(movie)
+		watchLaters = member.watchLater.all()
+		if movie in recommendedMovies:
+			member.recommendedMovie.remove(movie)
+	else:
+		member.watchLater.remove(movie)
+		watchLaters = member.watchLater.all()
+	recommend(request)
+	return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+#Suggesting movies by the system
+def recommend(request):
+
+	member = Member.objects.filter(user=request.user).first()
+	watchedMovies = member.watchedMovie.all()
+	watchLaters = member.watchLater.all()
+	recommendedMovies = member.recommendedMovie.all()
+
+	userMovieDetail = []
+
+	for watchLater in watchLaters:
+		for director in watchLater.director.all():
+			userMovieDetail.append(director)
+
+		for actor in watchLater.cast.all():
+			userMovieDetail.append(actor)
+
+		for genre in watchLater.genre.all():
+			userMovieDetail.append(genre)
+
+	for watchedMovie in watchedMovies:
+		for director in watchedMovie.director.all():
+			userMovieDetail.append(director)
+
+		for actor in watchedMovie.cast.all():
+			userMovieDetail.append(actor)
+
+		for genre in watchedMovie.genre.all():
+			userMovieDetail.append(genre)
+
+	for mov in Movie.objects.all():
+		movieDetail = []
+
+		if mov not in watchLaters and mov not in watchedMovies and mov not in recommendedMovies:
+
+			for director in mov.director.all():
+				movieDetail.append(director)
+
+			for actor in mov.cast.all():
+				movieDetail.append(actor)
+
+			for genre in mov.genre.all():
+				movieDetail.append(genre)
+
+			jaccardCount = jaccard(userMovieDetail, movieDetail)
+			
+			if (len(watchLaters) + len(watchedMovies)) < 5:
+				if jaccardCount > 0.24:
+					member.recommendedMovie.add(mov)
+			elif (len(watchLaters) + len(watchedMovies)) < 10:
+				if jaccardCount > 0.10:
+					member.recommendedMovie.add(mov)
+			else:
+				if jaccardCount > 0.07:
+					member.recommendedMovie.add(mov)
+
+def jaccard(list1, list2):
+    intersection = len(list(set(list1) & set(list2)))
+    union = (len(list1 + list2)) - intersection
+    return (float(intersection) / union)

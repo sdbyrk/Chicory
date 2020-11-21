@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+	<div class="card" style="width:400px;">
+		<div class="card-header">
+			<h1>Register</h1>
+		</div>
+		<div class="card-body">
+			<form action="{% url 'register' %}" method="POST">
+				<div class="form-group">
+					{% csrf_token %}
+					<label for="username">Kullanıcı Adı</label>
+					<input type="text" name="username" class="form-control" required>
+				</div>
+				<div class="form-group">
+					<label for="email">Email</label>
+					<input type="email" name="email" class="form-control" required>
+				</div>
+				<div class="form-group">
+					<label for="password">Parola</label>
+					<input type="password" name="password" class="form-control" required>
+				</div>
+				<div class="form-group">
+					<label for="repassword">Parola Onayı</label>
+					<input type="password" name="repassword" class="form-control" required>
+				</div>
+				<button type="submit" class="btn btn-primary">Kaydol</button>
+			</form>
+		</div>
+	</div>
+{% endblock %}

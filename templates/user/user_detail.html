@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+	{% block content %}
+		<div class="modal fade" id="followers" role="dialog">
+		    <div class="modal-dialog">
+		    	<div class="modal-content">
+		        	<div class="modal-header">
+		          		<h5 class="modal-title">Takipçiler</h5>
+	        			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          			<span aria-hidden="true">&times;</span>
+		        	</div>
+		        	<div class="modal-body">
+		          		{% for follower in followers %}
+							<a href="{% url 'user_detail' pk=follower.user.pk %}">{{ follower.user.username }}</a>
+							<br/>
+						{% endfor %}
+		        	</div>
+		        	<div class="modal-footer">
+		          		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        	</div>
+		      	</div>
+		      
+		    </div>
+	  	</div>
+		<div class="modal fade" id="followedUsers" role="dialog">
+		    <div class="modal-dialog">
+		    	<div class="modal-content">
+		        	<div class="modal-header">
+		          		<h5 class="modal-title">Takip Edilenler</h5>
+	        			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          			<span aria-hidden="true">&times;</span>
+		        	</div>
+		        	<div class="modal-body">
+		          		{% for followedUser in followedUsers %}
+							<a href="{% url 'user_detail' pk=followedUser.user.pk %}">{{ followedUser.user.username }}</a>
+							<br/>
+						{% endfor %}
+		        	</div>
+		        	<div class="modal-footer">
+		          		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        	</div>
+		      	</div>
+		      
+		    </div>
+	  	</div>
+	  	<br>
+	  	{% if user.is_authenticated %}
+			{% if member not in userFollowedList %}
+				<a class="btn btn-outline-info" id="followButton" title="Follow" style="float:right; text-decoration: none;" href="{% url 'follow' pk=member.user.pk %}">Takip Et</a>
+			{% else %}
+				<a class="btn btn-outline-danger" id="unfollowButton" title="Unfollow" style="float:right; text-decoration: none;" href="{% url 'follow' pk=member.user.pk %}">Takibi Bırak</a>
+			{% endif %}
+		{% endif %}
+		<header class="special">
+			<h2 style="text-align: center">{{ member.user.username }}</h2>
+			<br>
+		</header>
+		<div class="btn-group">
+			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#followers">Takipçiler</button>
+			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#followedUsers">Takip Edilenler</button>
+		</div>
+		<br>
+		<br>
+		<div class="button-group">
+			{% if watchedMovies %}
+				<button id="watchedButton" class="btn btn-outline-info active">İzlenen Filmler</button>
+			{% endif %}
+			{% if watchLaters %}
+				<button id="watchLaterButton" class="btn btn-outline-info">İzlenecek Filmler</button>
+			{% endif %}
+		</div>
+		<div id="watchedMovies" class="row row-cols-4">
+			{% for watchedMovie in watchedMovies %}
+				<div class="col">
+					<a href="{% url 'movie_detail' pk=watchedMovie.pk %}"><img src="{{ watchedMovie.poster }}"></a>
+					<br>
+					<p style="color:green; margin-right: 40px"><b>{{ watchedMovie.title }}</b></p>
+				</div>
+			{% endfor %}
+		</div>
+
+		<div id="watchLaters" class="row row-cols-4 d-none">
+			{% for watchLater in watchLaters %}
+				<div class="col">
+					<a href="{% url 'movie_detail' pk=watchLater.pk %}"><img src="{{ watchLater.poster }}"></a>
+					<br>
+					<p style="color:green; margin-right: 40px"><b>{{ watchLater.title }}</b></p>
+				</div>
+			{% endfor %}
+		</div>
+	{% endblock %}

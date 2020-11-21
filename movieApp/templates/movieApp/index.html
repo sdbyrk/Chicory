@@ -1,6 +1,0 @@
-{% for movie in movies %}
-	<a href="{% url 'movie_detail' pk=movie.pk %}"><img src="{{ movie.poster }}"></a>
-	<br>
-	{{ movie.title }}
-	<br>
-{% endfor %}

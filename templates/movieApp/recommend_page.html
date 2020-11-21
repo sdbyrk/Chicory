@@ -1,0 +1,28 @@
+
+<div class="modal-header">
+	<h3>Film Öner</h3>
+	<a class="btn" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span></a>
+</div>
+<div class="modal-header">
+	<h5 class="modal-title">{{ movie.title }}</h5>
+</div>
+<div class="modal-body">
+	{% if followedUsers %}
+		<form method="POST" action="{% url 'recommend_page' pk=movie.pk %}" >
+	    	{% csrf_token %}
+	    	{{ form.as_p }}
+			<br>
+	    	<input type="submit" id="suggestButton" style="float:right" value="Öner" class="btn btn-md btn-secondary"> 
+		</form>
+	{% else %}
+		<h6>Takip edilen kimse olmadığı için filmi öneremezsiniz!</h6>
+	{% endif %}
+</div>
+<script>
+	$('#suggestButton').click(function(){
+		var e = document.getElementById("followedList");
+		var person = e.options[e.selectedIndex].text;;
+		var message = person + " kişisine {{ movie.title }} filmi önerildi"
+    	alert(message)
+  	});
+</script>

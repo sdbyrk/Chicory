@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+	{% if user.is_authenticated %}
+		<div class="form-check" style="">
+			{% if movie in watchLaters %}
+				<a title="Add Watched" style="float:right; text-decoration: none;" href="{% url 'watched' pk=movie.pk %}"><i class="fas fa-check" style="color:red; margin-left :15px"></i></a>
+				<a title="Added Watch Later" style="float:right; text-decoration: none;" href="{% url 'later' pk=movie.pk %}"><i class="fas fa-plus" style="color:blue; margin-left :15px"></i></a>
+			{% elif movie in watchedMovies %}
+				<a title="Added Watched" style="float:right; text-decoration: none;" href="{% url 'watched' pk=movie.pk %}"><i class="fas fa-check" style="color:green; margin-left :15px"></i></a>
+			{% else %}
+				<a title="Add Watched" style="float:right; text-decoration: none;" href="{% url 'watched' pk=movie.pk %}"><i class="fas fa-check" style="color:red; margin-left :15px"></i></a>
+				<a title="Add Watch Later" style="float:right; text-decoration: none;" href="{% url 'later' pk=movie.pk %}"><i class="fas fa-plus" style="color:orange; margin-left :15px"></i></a>
+			{% endif %}
+			<form method="POST">
+				<a title="Suggest" href="{% url 'recommend_page' pk=movie.pk %}" data-toggle="modal" data-target="#suggest"  style="float:right; text-decoration: none;"><i class="fas fa-share"></i></a>
+			</form>
+		</div>
+	{% endif %}
+	<br><br>
+	<div class="row">
+		<div class="col-sm-3">
+			<div class="card">
+				<div class="card-header">{{ movie.title }}</div>
+		    	<div class="card-body">
+		        	<img src="{{ movie.poster }}">
+		      	</div>
+		    </div>
+		</div>
+		<div class="col-sm-2">
+			<div class="card">
+				<div class="card-header">Tür</div>
+				<div class="card-body">
+					{% for genre in movie.genre.all %}
+						<a href="{% url 'genre' pk=genre.pk %}">{{ genre.name }}</a>
+						<br>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-2">
+			<div class="card">
+				<div class="card-header">Puan</div>
+				<div class="card-body">
+					{{ movie.rating }}
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-2">
+			<div class="card">
+				<div class="card-header">Yönetmen</div>
+				<div class="card-body">
+					{% for director in movie.director.all %}
+						<a href="{% url 'director' pk=director.pk %}">{{ director.name }}</a>
+						<br>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-3">
+			<div class="card">
+				<div class="card-header">Oyuncular</div>
+				<div class="card-body">
+					{% for actor in movie.cast.all %}
+						<a href="{% url 'actor' pk=actor.pk %}">{{ actor.name }}</a>
+						<br>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade text-center" id="suggest" method="post">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			</div>
+		</div>
+	</div>
+{% endblock %}

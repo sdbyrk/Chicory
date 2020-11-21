@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+	{% block content %}
+		<div class="button-group">
+			{% if movies %}
+				<button id="movieButton" class="btn btn-outline-info active">Filmler</button>
+			{% endif %}
+			{% if actors %}
+				<button id="actorButton" class="btn btn-outline-info">Oyuncular</button>
+			{% endif %}
+			{% if directors %}
+				<button id="directorButton" class="btn btn-outline-info">Yönetmenler</button>
+			{% endif %}
+			{% if users %}
+				<button id="userButton" class="btn btn-outline-info">Kullanıcılar</button>
+			{% endif %}
+		</div>
+		{% if movies %}
+			<div id="searchMovies">
+				<header class="special">
+					<h2>Filmler</h2>
+				</header>
+				<div class="row row-cols-4">
+					{% for movie in movies %}
+						<div class="col">
+							<a href="{% url 'movie_detail' pk=movie.pk %}"><img src="{{ movie.poster }}"></a>
+							<br>
+							{% if movie in watchLaters %}
+								<p style="color:green; margin-right: 40px"><b>{{ movie.title }}</b><span style="margin-left:10px" class="glyphicon glyphicon-list"></span></p>
+							{% elif movie in watchedMovies %}
+								<p style="color:green; margin-right: 40px"><b>{{ movie.title }}</b><span style="margin-left:10px" class="glyphicon glyphicon-ok"></span></p>
+							{% else %}
+								<p style="color:green; margin-right: 40px"><b>{{ movie.title }}</b></p>
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endif %}
+		{% if actors %}
+			<div id="searchActors" class="d-none">
+				<header class="special">
+					<h2>Oyuncular</h2>
+				</header>
+				<div class="row row-cols-4">
+					{% for actor in actors %}
+						<div class="col">
+							<a href="{% url 'actor' pk=actor.pk %}">{{ actor.name}}</a>
+							<br/>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endif %}
+		{% if directors %}
+			<div id="searchDirectors" class="d-none">
+				<header class="special">
+					<h2>Yönetmenler</h2>
+				</header>
+				<div class="row row-cols-4">
+					{% for director in directors %}
+						<div class="col">
+							<a href="{% url 'director' pk=director.pk %}">{{ director.name}}</a>
+							<br/>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endif %}
+		{% if users %}
+			<div id="searchUsers" class="hidden">
+				<header class="special">
+					<h2>Kullanıcılar</h2>
+				</header>
+				<div class="row row-cols-4">
+					{% for user in users %}
+						<div class="col">
+							<a href="{% url 'user_detail' pk=user.pk %}">{{ user.username }}</a>
+							<br/>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endif %}
+		<script>
+			$("#movieButton").click(function(){
+			  	$("#movieButton").addClass("active");
+			  	$("#userButton").removeClass("active");
+			  	$("#actorButton").removeClass("active");
+			  	$("#directorButton").removeClass("active");
+			  	$("#searchMovies").removeClass('d-none');
+			  	$("#searchUsers").addClass('d-none');
+			  	$("#searchActors").addClass('d-none');
+			  	$("#searchDirectors").addClass('d-none');
+		  	});
+			$("#userButton").click(function(){
+			  	$("#userButton").addClass("active");
+			  	$("#movieButton").removeClass("active");
+			  	$("#actorButton").removeClass("active");
+			  	$("#directorButton").removeClass("active");
+			  	$("#searchUsers").removeClass('d-none');
+			  	$("#searchMovies").addClass('d-none');
+			  	$("#searchActors").addClass('d-none');
+			  	$("#searchDirectors").addClass('d-none');
+		  	});
+		  	$("#actorButton").click(function(){
+			  	$("#actorButton").addClass("active");
+			  	$("#movieButton").removeClass("active");
+			  	$("#userButton").removeClass("active");
+			  	$("#directorButton").removeClass("active");
+			  	$("#searchActors").removeClass('d-none');
+			  	$("#searchMovies").addClass('d-none');
+			  	$("#searchUsers").addClass('d-none');
+			  	$("#searchDirectors").addClass('d-none');
+		  	});
+		  	$("#directorButton").click(function(){
+			  	$("#directorButton").addClass("active");
+			  	$("#movieButton").removeClass("active");
+			  	$("#actorButton").removeClass("active");
+			  	$("#userButton").removeClass("active");
+			  	$("#searchDirectors").removeClass('d-none');
+			  	$("#searchMovies").addClass('d-none');
+			  	$("#searchActors").addClass('d-none');
+			  	$("#searchUsers").addClass('d-none');
+		  	});
+
+		</script>
+	{% endblock %}
