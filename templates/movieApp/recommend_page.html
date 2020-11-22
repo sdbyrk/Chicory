@@ -12,17 +12,9 @@
 	    	{% csrf_token %}
 	    	{{ form.as_p }}
 			<br>
-	    	<input type="submit" id="suggestButton" style="float:right" value="Öner" class="btn btn-md btn-secondary"> 
+	    	<input type="submit" style="float:right" value="Öner" class="btn btn-md btn-secondary"> 
 		</form>
 	{% else %}
 		<h6>Takip edilen kimse olmadığı için filmi öneremezsiniz!</h6>
 	{% endif %}
 </div>
-<script>
-	$('#suggestButton').click(function(){
-		var e = document.getElementById("followedList");
-		var person = e.options[e.selectedIndex].text;;
-		var message = person + " kişisine {{ movie.title }} filmi önerildi"
-    	alert(message)
-  	});
-</script>

@@ -24,13 +24,7 @@
 						<div class="col">
 							<a href="{% url 'movie_detail' pk=movie.pk %}"><img src="{{ movie.poster }}"></a>
 							<br>
-							{% if movie in watchLaters %}
-								<p style="color:green; margin-right: 40px"><b>{{ movie.title }}</b><span style="margin-left:10px" class="glyphicon glyphicon-list"></span></p>
-							{% elif movie in watchedMovies %}
-								<p style="color:green; margin-right: 40px"><b>{{ movie.title }}</b><span style="margin-left:10px" class="glyphicon glyphicon-ok"></span></p>
-							{% else %}
-								<p style="color:green; margin-right: 40px"><b>{{ movie.title }}</b></p>
-							{% endif %}
+							<p style="color: #2F4F4F; margin-right: 40px"><b>{{ movie.title }}</b></p>
 						</div>
 					{% endfor %}
 				</div>

@@ -1,15 +1,23 @@
 {% load notifications_tags %}
 <header>
 	<div class="sidenav">
-		<a href="{% url 'index' %}" title="Anasayfa"><i class="fas fa-home"></i></a>
+		{% if 'index' in request.resolver_match.url_name %}
+			<a href="{% url 'index' %}" title="Anasayfa"><i class="fas fa-home" style="color : #5F9EA0;"></i></a>
+		{% else %}
+			<a href="{% url 'index' %}" title="Anasayfa"><i class="fas fa-home"></i></a>
+		{% endif %}
 		{% if user.is_authenticated %}
 			{% notifications_unread as unread_count %}
 			{% if unread_count %}
 				<a href="{% url 'notifications' %}" title="Bildirimler" data-toggle="modal" data-target="#notifications"><i class="far fa-bell" style="color: red;"><sup>{{ unread_count }}</sup></i></a>
 			{% else %}
-				<a href="{% url 'notifications' %}" data-toggle="modal" data-target="#notifications"><i class="far fa-bell" style="color: #818181"></i></a>
+				<a href="{% url 'notifications' %}" data-toggle="modal" data-target="#notifications"><i class="far fa-bell"></i></a>
 			{% endif %}
-			<a href="{% url 'user_page' %}" title="Profil"><i class="far fa-user"></i></a>
+			{% if 'user' in request.path %}
+				<a href="{% url 'user_page' %}" title="Profil"><i class="far fa-user active" style="color : #5F9EA0;"></i></a>
+			{% else %}
+				<a href="{% url 'user_page' %}" title="Profil"><i class="far fa-user"></i></a>
+			{% endif %}
 			<a href="javascript:{document.getElementById('logout').submit()}" title="Çıkış"><i class="fas fa-sign-out-alt"></i></span></a>
 			<form action="{% url 'logout' %}" method="POST" id="logout">
 				{% csrf_token %}
@@ -17,8 +25,16 @@
 			</form>
 
 		{% else %}
-			<a href="{% url 'login' %}" title="Giriş"><i class="fas fa-sign-in-alt"></i></a>
-			<a href="{% url 'register' %}" title="Yeni Üye"><i class="fas fa-user-plus"></i></a>
+			{% if 'login' in request.path %}
+				<a href="{% url 'login' %}" title="Giriş"><i class="fas fa-sign-in-alt active" style="color : #5F9EA0;"></i></a>
+			{% else %}
+				<a href="{% url 'login' %}" title="Giriş"><i class="fas fa-sign-in-alt"></i></a>
+			{% endif %}
+			{% if 'register' in request.path %}
+				<a href="{% url 'register' %}" title="Yeni Üye"><i class="fas fa-user-plus active" style="color : #5F9EA0;"></i></a>
+			{% else %}
+				<a href="{% url 'register' %}" title="Yeni Üye"><i class="fas fa-user-plus"></i></a>
+			{% endif %}
 		{% endif %}
 
 	</div>
@@ -33,7 +49,7 @@
 			</div>
 		</form>
 		<span class="input-group-btn">
-	    	<a id="btn" ><i class="fas fa-search"></i></a>
+	    	<a href="#searchText" id="btn" ><i class="fas fa-search"></i></a>
 	    </span>
 	   	<div class="inner">
 			<h1>Movie Site</h1>

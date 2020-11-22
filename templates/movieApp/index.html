@@ -11,7 +11,7 @@
 	<div class="col">
 			<a href="{% url 'movie_detail' pk=movie.pk %}"><img src="{{ movie.poster }}"></a>
 			<br>
-			{{ movie.title }}
+			<p style="color: #2F4F4F">{{ movie.title }}</p>
 			<br>
 		</div>
 	{% endfor %}

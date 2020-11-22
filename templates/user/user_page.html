@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-	{% block content %}
+{% block content %}
 	<div class="modal fade" id="followers" role="dialog">
 	    <div class="modal-dialog">
 	    	<div class="modal-content">
@@ -43,11 +43,11 @@
 	      	</div>
 	    </div>
   	</div>
-	<header class="special">
-		<h2 style="text-align: center">{{ user.username }}</h2>
-		<br>
-	</header>
-	<div class="btn-group">
+	<div class="button-group">
+		<header class="special">
+			<h2>{{ user.username }}</h2>
+			<br>
+		</header>
 		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#followers">Takipçiler</button>
 		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#followedUsers">Takip Edilenler</button>
 		
@@ -65,32 +65,32 @@
 			<button id="recommendedButton" class="btn btn-outline-info">Önerilen Filmler</button>
 		{% endif %}
 	</div>
-		<div id="watchedMovies" class="row row-cols-4">
-			{% for watchedMovie in watchedMovies %}
-				<div class="col">
-					<a href="{% url 'movie_detail' pk=watchedMovie.pk %}"><img src="{{ watchedMovie.poster }}"></a>
-					<br>
-					<p style="color:green; margin-right: 40px"><b>{{ watchedMovie.title }}</b></p>
-				</div>
-			{% endfor %}
-		</div>
-	
-		<div id="watchLaters" class="row row-cols-4 d-none">
-			{% for watchLater in watchLaters %}
-				<div class="col">
-					<a href="{% url 'movie_detail' pk=watchLater.pk %}"><img src="{{ watchLater.poster }}"></a>
-					<br>
-					<p style="color:green; margin-right: 40px"><b>{{ watchLater.title }}</b></p>
-				</div>
-			{% endfor %}
-		</div>
-		<div id="recommendedMovies" class="row row-cols-4 d-none">
-			{% for recommendedMovie in recommendedMovies %}
-				<div class="col">
-					<a href="{% url 'movie_detail' pk=recommendedMovie.pk %}"><img src="{{ recommendedMovie.poster }}"></a>
-					<br>
-					<p style="color:green; margin-right: 40px"><b>{{ recommendedMovie.title }}</b></p>
-				</div>
-			{% endfor %}
-		</div>
-	{% endblock %}
+	<div id="watchedMovies" class="row row-cols-4">
+		{% for watchedMovie in watchedMovies %}
+			<div class="col">
+				<a href="{% url 'movie_detail' pk=watchedMovie.pk %}"><img src="{{ watchedMovie.poster }}"></a>
+				<br>
+				<p style="color: #2F4F4F; margin-right: 40px"><b>{{ watchedMovie.title }}</b></p>
+			</div>
+		{% endfor %}
+	</div>
+
+	<div id="watchLaters" class="row row-cols-4 d-none">
+		{% for watchLater in watchLaters %}
+			<div class="col">
+				<a href="{% url 'movie_detail' pk=watchLater.pk %}"><img src="{{ watchLater.poster }}"></a>
+				<br>
+				<p style="color:#2F4F4F; margin-right: 40px"><b>{{ watchLater.title }}</b></p>
+			</div>
+		{% endfor %}
+	</div>
+	<div id="recommendedMovies" class="row row-cols-4 d-none">
+		{% for recommendedMovie in recommendedMovies %}
+			<div class="col">
+				<a href="{% url 'movie_detail' pk=recommendedMovie.pk %}"><img src="{{ recommendedMovie.poster }}"></a>
+				<br>
+				<p style="color:#2F4F4F; margin-right: 40px"><b>{{ recommendedMovie.title }}</b></p>
+			</div>
+		{% endfor %}
+	</div>
+{% endblock %}

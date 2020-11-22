@@ -50,11 +50,12 @@
 				<a class="btn btn-outline-danger" id="unfollowButton" title="Unfollow" style="float:right; text-decoration: none;" href="{% url 'follow' pk=member.user.pk %}">Takibi Bırak</a>
 			{% endif %}
 		{% endif %}
-		<header class="special">
-			<h2 style="text-align: center">{{ member.user.username }}</h2>
-			<br>
-		</header>
-		<div class="btn-group">
+		
+		<div class="button-group">
+			<header class="special">
+				<h2>{{ member.user.username }}</h2>
+				<br>
+			</header>
 			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#followers">Takipçiler</button>
 			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#followedUsers">Takip Edilenler</button>
 		</div>
@@ -73,7 +74,7 @@
 				<div class="col">
 					<a href="{% url 'movie_detail' pk=watchedMovie.pk %}"><img src="{{ watchedMovie.poster }}"></a>
 					<br>
-					<p style="color:green; margin-right: 40px"><b>{{ watchedMovie.title }}</b></p>
+					<p style="color:#2F4F4F; margin-right: 40px"><b>{{ watchedMovie.title }}</b></p>
 				</div>
 			{% endfor %}
 		</div>
@@ -83,7 +84,7 @@
 				<div class="col">
 					<a href="{% url 'movie_detail' pk=watchLater.pk %}"><img src="{{ watchLater.poster }}"></a>
 					<br>
-					<p style="color:green; margin-right: 40px"><b>{{ watchLater.title }}</b></p>
+					<p style="color:#2F4F4F; margin-right: 40px"><b>{{ watchLater.title }}</b></p>
 				</div>
 			{% endfor %}
 		</div>

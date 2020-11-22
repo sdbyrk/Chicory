@@ -82,6 +82,8 @@ def user_page(request):
 		})
 
 def user_detail(request, pk):
+	if pk == request.user.pk:
+		return redirect('user_page')
 	member = Member.objects.filter(user__pk=pk).first()
 	if not member: 
 		user = User.objects.filter(pk=pk).first()

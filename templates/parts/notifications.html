@@ -1,7 +1,7 @@
 {% load notifications_tags %}
 	<div class="modal-header">
 		<h3>Bildirimler</h3>
-		<a class="btn" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span></a>
+		<a class="btn" data-dismiss="modal"><i class="fas fa-times"></i></span></a>
 	</div>
 	{% if unreadNotifications %}
     	<div class="modal-header">
@@ -15,14 +15,16 @@
 						<p><a href="{% url 'user_detail' pk=unreadNotification.actor.pk %}">{{ unreadNotification.actor }} </a>&nbsp<a href="{% url 'recommendMovie' pk=unreadNotification.pk %}">{{ unreadNotification.action_object }}</a>&nbsp{{ unreadNotification.verb }}</p>
 					</div>
 					 <div class=".col-md-4 .ml-auto">
-						<a class="btn btn-outline-primary" href="{% url 'read_notification' pk=unreadNotification.pk %}"><span class="glyphicon glyphicon-eye-open"></span></a><a class="btn btn-outline-danger" href="{% url 'delete_notification' pk=unreadNotification.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+						<a href="{% url 'read_notification' pk=unreadNotification.pk %}"><i class="far fa-eye" style="color:blue; margin-left :15px"></i></a>
+						<a href="{% url 'delete_notification' pk=unreadNotification.pk %}"><i class="far fa-trash-alt" style="color:red; margin-left :15px"></i></a>
 					</div>
 					{% else %}
 					<div class="col-sm-9">
 						<p><a href="{% url 'user_detail' pk=unreadNotification.actor.pk %}">{{ unreadNotification.actor }}</a>&nbsp{{ unreadNotification.verb }}</p>
 					</div>
 					<div class=".col-md-4 .ml-auto">
-						<a class="btn btn-outline-primary" href="{% url 'read_notification' pk=unreadNotification.pk %}"><span class="glyphicon glyphicon-eye-open"></span></a><a class="btn btn-outline-danger" href="{% url 'delete_notification' pk=unreadNotification.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+						<a href="{% url 'read_notification' pk=unreadNotification.pk %}"><i class="far fa-eye" style="color:blue; margin-left :15px"></i></a>
+						<a href="{% url 'delete_notification' pk=unreadNotification.pk %}"><i class="far fa-trash-alt" style="color:red; margin-left :15px"></i></a>
 					</div>
 					{% endif %}
 				{% endfor %}
@@ -41,14 +43,16 @@
 							<p>{{ readNotification.actor }} &nbsp <a href="{% url 'recommendMovie' pk=readNotification.pk %}">{{ readNotification.action_object }}</a>&nbsp{{ readNotification.verb }}</p>
 						</div>
 						<div class=".col-md-4 .ml-auto">
-							<a class="btn btn-outline-primary" href="{% url 'unread_notification' pk=readNotification.pk %}"><span class="glyphicon glyphicon-eye-close"></span></a><a class="btn btn-outline-danger" href="{% url 'delete_notification' pk=readNotification.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+							<a href="{% url 'unread_notification' pk=readNotification.pk %}"><i class="far fa-eye-slash" style="color:blue; margin-left :15px"></i></a>
+							<a href="{% url 'delete_notification' pk=readNotification.pk %}"><i class="far fa-trash-alt" style="color:red; margin-left :15px"></i></a>
 						</div>
 					{% else %}
 						<div class="col-sm-9">
 							<p><a href="{% url 'user_detail' pk=readNotification.actor.pk %}">{{ readNotification.actor }}</a>&nbsp{{ readNotification.verb }}</p>
 						</div>
 						<div class=".col-md-4 .ml-auto">
-							<a class="btn btn-outline-primary" href="{% url 'unread_notification' pk=readNotification.pk %}"><span class="glyphicon glyphicon-eye-close"></span></a><a class="btn btn-outline-danger" href="{% url 'delete_notification' pk=readNotification.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+							<a href="{% url 'unread_notification' pk=readNotification.pk %}"><i class="far fa-eye-slash" style="color:blue; margin-left :15px"></i></a>
+							<a href="{% url 'delete_notification' pk=readNotification.pk %}"><i class="far fa-trash-alt" style="color:red; margin-left :15px"></i></a>
 						</div>
 					{% endif %}
 				{% endfor %}
@@ -56,5 +60,5 @@
 		</div>
 	{% endif %}
 	<div class="modal-footer">
-  		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+  		<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
 	</div>

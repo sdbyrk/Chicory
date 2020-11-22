@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 
+from notifications.signals import notify
 import os.path
 
 from .models import Actor, Director, Genre, Movie
@@ -160,8 +161,18 @@ def getData(request):
 
 def index(request):
 	movies = Movie.objects.all()
+	watchedMovies = []
+	watchLaters = []
+	users = []
+	member = None
+	if request.user.is_authenticated:
+		member = Member.objects.filter(user=request.user).first()
+	if member:
+		watchedMovies = member.watchedMovie.all()
+		watchLaters = member.watchLater.all()
 
-	return render(request, "movieApp/index.html", {"movies": movies})
+	return render(request, "movieApp/index.html",
+		{"movies": movies, "watchedMovies": watchedMovies, "watchLaters": watchLaters})
 
 def movie_detail(request, pk):
 	movie = get_object_or_404(Movie, pk=pk)
@@ -260,9 +271,13 @@ def watched(request, pk):
 		if movie in recommendedMovies:
 			member.recommendedMovie.remove(movie)
 		member.watchedMovie.add(movie)
+		message = movie.title + " filmi 'İzlenen Filmler' listesine eklendi."
+		messages.add_message(request, messages.SUCCESS, message)
 		watchedMovies = member.watchedMovie.all()
 	else:
 		member.watchedMovie.remove(movie)
+		message = movie.title + " filmi 'İzlenen Filmler' listesinden çıkarıldı."
+		messages.add_message(request, messages.SUCCESS, message)
 		watchedMovies = member.watchedMovie.all()
 	recommend(request)
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -276,11 +291,15 @@ def later(request, pk):
 	st = "/movie/" + str(pk) + "/"
 	if movie not in watchLaters:
 		member.watchLater.add(movie)
+		message = movie.title + " filmi 'İzlenecek Filmler' listesine eklendi."
+		messages.add_message(request, messages.SUCCESS, message)
 		watchLaters = member.watchLater.all()
 		if movie in recommendedMovies:
 			member.recommendedMovie.remove(movie)
 	else:
 		member.watchLater.remove(movie)
+		message = movie.title + " filmi 'İzlenen Filmler' listesinden çıkarıldı."
+		messages.add_message(request, messages.SUCCESS, message)
 		watchLaters = member.watchLater.all()
 	recommend(request)
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

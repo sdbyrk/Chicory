@@ -12,7 +12,7 @@
 				<a title="Add Watch Later" style="float:right; text-decoration: none;" href="{% url 'later' pk=movie.pk %}"><i class="fas fa-plus" style="color:orange; margin-left :15px"></i></a>
 			{% endif %}
 			<form method="POST">
-				<a title="Suggest" href="{% url 'recommend_page' pk=movie.pk %}" data-toggle="modal" data-target="#suggest"  style="float:right; text-decoration: none;"><i class="fas fa-share"></i></a>
+				<a title="Suggest" href="{% url 'recommend_page' pk=movie.pk %}" data-toggle="modal" data-target="#suggest"  style="float:right; text-decoration: none;"><input type="hidden" text="Hello"><i class="fas fa-share"></i></a>
 			</form>
 		</div>
 	{% endif %}
