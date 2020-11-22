@@ -288,7 +288,10 @@ def later(request, pk):
 	member = Member.objects.filter(user=request.user).first()
 	watchLaters = member.watchLater.all()
 	recommendedMovies = member.recommendedMovie.all()
-	st = "/movie/" + str(pk) + "/"
+	
+	if not member:
+		member = Member.objects.create(user=request.user)
+		
 	if movie not in watchLaters:
 		member.watchLater.add(movie)
 		message = movie.title + " filmi 'İzlenecek Filmler' listesine eklendi."
