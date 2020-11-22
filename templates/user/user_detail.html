@@ -69,7 +69,7 @@
 				<button id="watchLaterButton" class="btn btn-outline-info">İzlenecek Filmler</button>
 			{% endif %}
 		</div>
-		<div id="watchedMovies" class="row row-cols-4">
+		<div id="watchedMovies" class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
 			{% for watchedMovie in watchedMovies %}
 				<div class="col">
 					<a href="{% url 'movie_detail' pk=watchedMovie.pk %}"><img src="{{ watchedMovie.poster }}"></a>
@@ -79,7 +79,7 @@
 			{% endfor %}
 		</div>
 
-		<div id="watchLaters" class="row row-cols-4 d-none">
+		<div id="watchLaters" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 d-none">
 			{% for watchLater in watchLaters %}
 				<div class="col">
 					<a href="{% url 'movie_detail' pk=watchLater.pk %}"><img src="{{ watchLater.poster }}"></a>
