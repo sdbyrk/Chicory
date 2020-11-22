@@ -287,12 +287,12 @@ def later(request, pk):
 	movie = get_object_or_404(Movie, pk=pk)
 	member = Member.objects.filter(user=request.user).first()
 	
-	recommendedMovies = member.recommendedMovie.all()
-	
 	if not member:
 		member = Member.objects.create(user=request.user)
 
 	watchLaters = member.watchLater.all()
+	recommendedMovies = member.recommendedMovie.all()
+	
 	if movie not in watchLaters:
 		member.watchLater.add(movie)
 		message = movie.title + " filmi 'İzlenecek Filmler' listesine eklendi."
