@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.decorators import login_required
 
 from notifications.signals import notify
 
@@ -33,36 +36,64 @@ def register(request):
 		password = request.POST['password']
 		repassword = request.POST['repassword']
 
-		if password == repassword:
-			if User.objects.filter(username = username).exists():
-				messages.add_message(request, messages.WARNING, "Bu kullanıcı adı mevcut.")
-				return redirect('register')
-
-			else:
-				if User.objects.filter(email = email).exists():
-					messages.add_message(request, messages.WARNING, "Bu email mevcut")
-					return redirect('register')
-
-				else:
-					user = User.objects.create_user(username=username, email=email, password=password)
-					user.save()
-					messages.add_message(request, messages.SUCCESS, 'Hesap oluşturuldu.')
-					return redirect('login')
-		else:
-			messages.add_message(request, messages.WARNING, "Şifreler aynı değil")
+		if User.objects.filter(username = username).exists():
+			messages.add_message(request, messages.WARNING, "Bu kullanıcı adı mevcut.")
 			return redirect('register')
+		else:
+			if User.objects.filter(email = email).exists():
+				messages.add_message(request, messages.WARNING, "Bu email mevcut")
+				return redirect('register')
+			else:
+				if password != repassword:
+					messages.add_message(request, messages.WARNING, "Şifreler aynı değil")
+					return redirect('register')
+				else:
+					if password.isnumeric():
+						messages.add_message(request, messages.WARNING, "Şifre sadece numaradan oluşamaz.")
+						return redirect('register')
+					elif len(password) < 8:
+						messages.add_message(request, messages.WARNING, "Şifreniz en az 8 karakter içermelidir.")
+						return redirect('register')
+
+					else:
+						user = User.objects.create_user(username=username, email=email, password=password)
+						user.save()
+						auth.login(request, user)
+						messages.add_message(request, messages.SUCCESS, 'Hesap oluşturuldu.')
+						return redirect('index')
 	else:
 		return render(request, 'user/register.html')
 
-
+@login_required
 def logout(request):
-	print("Hello")
 	if request.method == 'POST':
-		print("Hiiii")
 		auth.logout(request)
 		messages.add_message(request, messages.SUCCESS, "Oturumunuz kapatıldı.")
 		return redirect('index')
 
+@login_required
+def changePassword(request):
+	if request.method == 'POST':
+		oldPassword = request.POST['oldPassword']
+		newPassword = request.POST['newPassword']
+		reNewPassword = request.POST['reNewPassword']
+		if request.user.check_password(oldPassword):
+			if newPassword == reNewPassword:
+				request.user.set_password(newPassword)
+				request.user.save()
+				update_session_auth_hash(request, request.user)
+				messages.add_message(request, messages.SUCCESS, "Şifreniz güncellendi.")
+				return redirect('index')
+			else:
+				messages.add_message(request, messages.ERROR, "Şifreler aynı değil.")
+				return redirect('changePassword')
+		else:
+			messages.add_message(request, messages.ERROR, "Eski parola yanlış girilmiş.")
+			return redirect('changePassword')
+	else:
+		return render(request, 'user/change_password.html')
+
+@login_required
 def user_page(request):
 	member = Member.objects.filter(user=request.user).first()
 	if not member:
@@ -118,6 +149,13 @@ def follow(request, pk):
 	followedUser = Relationship.objects.filter(member=member).first()
 	person = User.objects.filter(pk=pk).first()
 
+	if not member:
+		memberUser = User.objects.filter(pk=pk).first()
+		member = Member.objects.create(user=memberUser)
+		
+	if not user:
+		user = Member.objects.create(user=request.user)
+
 	if not requestUser:
 		requestUser = Relationship.objects.create(member=user)
 
@@ -154,7 +192,6 @@ def removeFollower(request, pk):
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def notificationsPage(request):
-	print("Hello")
 	unreadNotifications = request.user.notifications.unread()
 	readNotifications = request.user.notifications.read()
 	return render(request, "parts/notifications.html", {"unreadNotifications": unreadNotifications, "readNotifications": readNotifications})

@@ -10,22 +10,24 @@
     	<div class="modal-body">
     		<div class="row">
 				{% for unreadNotification in unreadNotifications %}
-					{% if unreadNotification.action_object %}
-					<div class="col-sm-9">
-						<p><a href="{% url 'user_detail' pk=unreadNotification.actor.pk %}">{{ unreadNotification.actor }} </a>&nbsp<a href="{% url 'recommendMovie' pk=unreadNotification.pk %}">{{ unreadNotification.action_object }}</a>&nbsp{{ unreadNotification.verb }}</p>
-					</div>
-					 <div class=".col-md-4 .ml-auto">
-						<a href="{% url 'read_notification' pk=unreadNotification.pk %}"><i class="far fa-eye" style="color:blue; margin-left :15px"></i></a>
-						<a href="{% url 'delete_notification' pk=unreadNotification.pk %}"><i class="far fa-trash-alt" style="color:red; margin-left :15px"></i></a>
-					</div>
-					{% else %}
-					<div class="col-sm-9">
-						<p><a href="{% url 'user_detail' pk=unreadNotification.actor.pk %}">{{ unreadNotification.actor }}</a>&nbsp{{ unreadNotification.verb }}</p>
-					</div>
-					<div class=".col-md-4 .ml-auto">
-						<a href="{% url 'read_notification' pk=unreadNotification.pk %}"><i class="far fa-eye" style="color:blue; margin-left :15px"></i></a>
-						<a href="{% url 'delete_notification' pk=unreadNotification.pk %}"><i class="far fa-trash-alt" style="color:red; margin-left :15px"></i></a>
-					</div>
+					{% if unreadNotification.actor and unreadNotification.verb %}
+						{% if unreadNotification.action_object %}
+							<div class="col-sm-9">
+								<p><a href="{% url 'user_detail' pk=unreadNotification.actor.pk %}">{{ unreadNotification.actor }} </a>&nbsp<a href="{% url 'recommendMovie' pk=unreadNotification.pk %}">{{ unreadNotification.action_object }}</a>&nbsp{{ unreadNotification.verb }}</p>
+							</div>
+							 <div class=".col-md-4 .ml-auto">
+								<a href="{% url 'read_notification' pk=unreadNotification.pk %}"><i class="far fa-eye" style="color:blue; margin-left :15px"></i></a>
+								<a href="{% url 'delete_notification' pk=unreadNotification.pk %}"><i class="far fa-trash-alt" style="color:red; margin-left :15px"></i></a>
+							</div>
+							{% else %}
+							<div class="col-sm-9">
+								<p><a href="{% url 'user_detail' pk=unreadNotification.actor.pk %}">{{ unreadNotification.actor }}</a>&nbsp{{ unreadNotification.verb }}</p>
+							</div>
+							<div class=".col-md-4 .ml-auto">
+								<a href="{% url 'read_notification' pk=unreadNotification.pk %}"><i class="far fa-eye" style="color:blue; margin-left :15px"></i></a>
+								<a href="{% url 'delete_notification' pk=unreadNotification.pk %}"><i class="far fa-trash-alt" style="color:red; margin-left :15px"></i></a>
+							</div>
+						{% endif %}
 					{% endif %}
 				{% endfor %}
 			</div>
