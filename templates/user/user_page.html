@@ -43,7 +43,7 @@
 	      	</div>
 	    </div>
   	</div>
-  	<a class="btn btn-outline-info" id="changePassword" title="Şifre Değiştir" style="float:right; text-decoration: none;" href="{% url 'changePassword'%}">Bilgileri Güncelle</a>
+  	<a class="btn btn-outline-info" id="changePassword" style="float:right; text-decoration: none;" href="{% url 'updateInfo'%}">Bilgileri Güncelle</a>
 	<div class="button-group">
 		<header class="special">
 			<h2>{{ user.username }}</h2>
@@ -56,18 +56,18 @@
 	<br>
 	<br>
 	<div class="button-group">
-		{% if watchedMovies %}
+		{% if member.watchedMovie.all %}
 			<button id="watchedButton" class="btn btn-outline-info active">İzlenen Filmler</button>
 		{% endif %}
-		{% if watchLaters %}
+		{% if member.watchLater.all %}
 			<button id="watchLaterButton" class="btn btn-outline-info">İzlenecek Filmler</button>
 		{% endif %}
-		{% if recommendedMovies %}
+		{% if member.recommendedMovie.all %}
 			<button id="recommendedButton" class="btn btn-outline-info">Önerilen Filmler</button>
 		{% endif %}
 	</div>
 	<div id="watchedMovies" class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
-		{% for watchedMovie in watchedMovies %}
+		{% for watchedMovie in member.watchedMovie.all %}
 			<div class="col">
 				<a href="{% url 'movie_detail' pk=watchedMovie.pk %}"><img src="{{ watchedMovie.poster }}"></a>
 				<br>
@@ -77,7 +77,7 @@
 	</div>
 
 	<div id="watchLaters" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 d-none">
-		{% for watchLater in watchLaters %}
+		{% for watchLater in member.watchLater.all %}
 			<div class="col">
 				<a href="{% url 'movie_detail' pk=watchLater.pk %}"><img src="{{ watchLater.poster }}"></a>
 				<br>
@@ -86,7 +86,7 @@
 		{% endfor %}
 	</div>
 	<div id="recommendedMovies" class="row row-cols-1 row-cols-sm-2 row-cols-md-4 d-none">
-		{% for recommendedMovie in recommendedMovies %}
+		{% for recommendedMovie in member.recommendedMovie.all %}
 			<div class="col">
 				<a href="{% url 'movie_detail' pk=recommendedMovie.pk %}"><img src="{{ recommendedMovie.poster }}"></a>
 				<br>

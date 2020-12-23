@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
-	<p>{{ filtered.name }}</p>
-
-	{% for movie in movies %}
-		<a href="{% url 'movie_detail' pk=movie.pk %}"><img src="{{ movie.poster }}"></a>
-		<br>
-		{{ movie.title }}
-	{% endfor %}
+	<h2>{{ filtered.name }}</h2>
+	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+		{% for movie in movies %}
+		<div class="col">
+				<a href="{% url 'movie_detail' pk=movie.pk %}"><img src="{{ movie.poster }}"></a>
+				<br>
+				<p style="color: #2F4F4F">{{ movie.title }}</p>
+				<br>
+			</div>
+		{% endfor %}
+	</div>
 {% endblock %}

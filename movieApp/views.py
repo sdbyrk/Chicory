@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -161,18 +161,27 @@ def getData(request):
 
 def index(request):
 	movies = Movie.objects.all()
-	watchedMovies = []
-	watchLaters = []
-	users = []
-	member = None
-	if request.user.is_authenticated:
-		member = Member.objects.filter(user=request.user).first()
-	if member:
-		watchedMovies = member.watchedMovie.all()
-		watchLaters = member.watchLater.all()
+	genres = Genre.objects.all()
 
 	return render(request, "movieApp/index.html",
-		{"movies": movies, "watchedMovies": watchedMovies, "watchLaters": watchLaters})
+		{"movies": movies, "genres": genres})
+
+def order(request, pk):
+	movies = Movie.objects.all()
+	genres = Genre.objects.all()
+
+	if pk == 0:
+		movies = Movie.objects.all().order_by("title")
+	elif pk == 1:
+		movies = Movie.objects.all().order_by("-title")
+	elif pk == 2:
+		movies = Movie.objects.all().order_by("rating")
+	else: 
+		movies = Movie.objects.all().order_by("-rating")
+
+
+	return render(request, "movieApp/index.html",
+		{"movies": movies, "genres": genres})
 
 def movie_detail(request, pk):
 	movie = get_object_or_404(Movie, pk=pk)
@@ -192,22 +201,22 @@ def movie_detail(request, pk):
 def actorMovies(request, pk):
 	filtered = get_object_or_404(Actor, pk=pk)
 	movies = Movie.objects.filter(cast__pk=pk)
-
-	return render(request, "movieApp/filtered_page.html", {"filtered":filtered, "movies": movies})
+	genres = Genre.objects.all()
+	return render(request, "movieApp/filtered_page.html", {"filtered":filtered, "movies": movies, "genres": genres})
 
 # Director's movies
 def directorMovies(request, pk):
 	filtered = get_object_or_404(Director, pk=pk)
 	movies = Movie.objects.filter(director__pk=pk)
-
-	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies})
+	genres = Genre.objects.all()
+	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies, "genres": genres})
 
 # Movies by genre
 def genreMovies(request, pk):
 	filtered = get_object_or_404(Genre, pk=pk)
 	movies = Movie.objects.filter(genre__pk=pk)
-
-	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies})
+	genres = Genre.objects.all()
+	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies, "genres": genres})
 
 def searchText(request):
 	query = request.GET.get('q')

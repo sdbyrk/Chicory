@@ -1,7 +1,7 @@
 {% load notifications_tags %}
 <header>
 	<div class="sidenav">
-		{% if 'index' in request.resolver_match.url_name %}
+		{% if 'index' in request.resolver_match.url_name or 'order' in request.resolver_match.url_name%}
 			<a href="{% url 'index' %}" title="Anasayfa"><i class="fas fa-home" style="color : #5F9EA0;"></i></a>
 		{% else %}
 			<a href="{% url 'index' %}" title="Anasayfa"><i class="fas fa-home"></i></a>

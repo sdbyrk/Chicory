@@ -59,6 +59,7 @@ def register(request):
 						user = User.objects.create_user(username=username, email=email, password=password)
 						user.save()
 						auth.login(request, user)
+						member = Member.objects.create(user=request.user)
 						messages.add_message(request, messages.SUCCESS, 'Hesap oluşturuldu.')
 						return redirect('index')
 	else:
@@ -83,7 +84,7 @@ def changePassword(request):
 				request.user.save()
 				update_session_auth_hash(request, request.user)
 				messages.add_message(request, messages.SUCCESS, "Şifreniz güncellendi.")
-				return redirect('index')
+				return redirect('user_page')
 			else:
 				messages.add_message(request, messages.ERROR, "Şifreler aynı değil.")
 				return redirect('changePassword')
@@ -94,13 +95,33 @@ def changePassword(request):
 		return render(request, 'user/change_password.html')
 
 @login_required
+def updateInfo(request):
+	if request.method == 'POST':
+		newUsername = request.POST['newUsername']
+		newEmail = request.POST['newEmail']
+		if newUsername:
+			if User.objects.filter(username = newUsername).exists():
+				messages.add_message(request, messages.WARNING, "Bu kullanıcı adı mevcut.")
+			else:
+				request.user.username = newUsername
+		if newEmail:
+			if User.objects.filter(email = newEmail).exists():
+				messages.add_message(request, messages.WARNING, "Bu email mevcut")
+			else:
+				request.user.email = newEmail
+		request.user.save()
+		update_session_auth_hash(request, request.user)
+		messages.add_message(request, messages.SUCCESS, "Bilgiler güncellendi.")
+		return redirect('user_page')
+	else:
+		return render(request, 'user/update_info.html')
+
+@login_required
 def user_page(request):
 	member = Member.objects.filter(user=request.user).first()
-	if not member:
-		member = Member.objects.create(user=request.user)
 	watchedMovies = member.watchedMovie.all()
 	watchLaters = member.watchLater.all()
-	recommendedMovies = Member.objects.filter(user=request.user).first().recommendedMovie.all()
+	recommendedMovies = member.recommendedMovie.all()
 	relation = Relationship.objects.filter(member=member).first()
 	followers = []
 	followedUsers = []
@@ -109,19 +130,14 @@ def user_page(request):
 		followedUsers = relation.followed.all()
 	return render(
 		request, "user/user_page.html", {
-		"watchedMovies":watchedMovies, "watchLaters":watchLaters, "recommendedMovies": recommendedMovies,"followers": followers, "followedUsers":followedUsers
+			"member": member, "followers": followers, "followedUsers":followedUsers
 		})
+
 
 def user_detail(request, pk):
 	if pk == request.user.pk:
 		return redirect('user_page')
 	member = Member.objects.filter(user__pk=pk).first()
-	if not member: 
-		user = User.objects.filter(pk=pk).first()
-		member = Member.objects.create(user=user)
-	watchedMovies = member.watchedMovie.all()
-	watchLaters = member.watchLater.all()
-	recommendedMovies = member.recommendedMovie.all()
 	relation = Relationship.objects.filter(member=member).first()
 	followers = []
 	followedUsers = []
@@ -137,7 +153,7 @@ def user_detail(request, pk):
 		followedUsers = relation.followed.all()
 	return render(
 		request, "user/user_detail.html", {
-		"member": member, "watchedMovies":watchedMovies, "watchLaters":watchLaters, "recommendedMovies": recommendedMovies,"followers": followers, "followedUsers":followedUsers, "userFollowedList": userFollowedList
+		"member": member, "followers": followers, "followedUsers":followedUsers, "userFollowedList": userFollowedList
 		})
 
 def follow(request, pk):
@@ -148,13 +164,6 @@ def follow(request, pk):
 	requestUser = Relationship.objects.filter(member=user).first()
 	followedUser = Relationship.objects.filter(member=member).first()
 	person = User.objects.filter(pk=pk).first()
-
-	if not member:
-		memberUser = User.objects.filter(pk=pk).first()
-		member = Member.objects.create(user=memberUser)
-		
-	if not user:
-		user = Member.objects.create(user=request.user)
 
 	if not requestUser:
 		requestUser = Relationship.objects.create(member=user)

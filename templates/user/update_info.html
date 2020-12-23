@@ -3,21 +3,27 @@
 	<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
 		<div class="card" style="width:400px;">
 			<div class="card-header">
-				<h1>Kullanıcı Bilgileri Değiştirme</h1>
+				<h1>Bilgileri Değiştirme</h1>
 			</div>
 			<div class="card-body">
-				<form action="{% url 'register' %}" method="POST">
+				<form method="POST">
+					<div class="form-group">
+						<label>Mevcut Kullanıcı Adı: {{ user.username }}</label>
+						<label>Mevcut Email: {{ user.email }}</label>
+					</div>
 					<div class="form-group">
 						{% csrf_token %}
-						<label for="username">Kullanıcı Adı</label>
-						<input type="text" name="username" class="form-control" required>
+						<label for="newUsername">Yeni Kullanıcı Adı</label>
+						<input type="text" name="newUsername" class="form-control">
 					</div>
 					<div class="form-group">
-						<label for="email">Email</label>
-						<input type="email" name="email" class="form-control" required>
+						<label for="newEmail">Yeni Email</label>
+						<input type="email" name="newEmail" class="form-control">
 					</div>
-					<a class="btn btn-outline-info" id="changePassword" title="Şifre Değiştir" style="float:right; text-decoration: none;" href="{% url 'changePassword'%}">Şifre Değiştir</a>
-					<button type="submit" class="btn btn-primary">Kaydet</button>
+					<div class="btn-group">
+						<a class="btn btn-outline-info" id="changePassword" title="Şifre Değiştir" style="float:right; text-decoration: none;" href="{% url 'changePassword'%}">Şifre Değiştir</a>
+						<button type="submit" class="btn btn-info">Kaydet</button>
+					</div>
 				</form>
 			</div>
 		</div>

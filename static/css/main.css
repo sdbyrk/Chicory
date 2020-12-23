@@ -36,6 +36,7 @@ option {
 }
 .container{
 	padding-left: 7em;
+	padding-right: 7em;
 	margin-top: 3em;
 }
 .col {
@@ -43,7 +44,7 @@ option {
 }
 .topnav {
 	overflow: hidden;
-	height: 300px;
+	height: 230px;
 	background-color: #111;
 }
 .topnav input{
@@ -115,11 +116,26 @@ option {
 .sidenav a.active {
  	color: #5F9EA0;
 }
+
+.filter-btn {
+	position: absolute;
+	padding-left: 10px;
+    right: 120px;
+    top: 200px;
+}
+
 .main {
 	margin-left: 160px;
 	font-size: 28px;
 	padding: 0px 10px;
 }
+
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden;
+}
+
 @media screen and (max_height: 450px) {
 	.sidenav {padding-top: 15px;}
 	.sidenav a {font-size: 18px;}

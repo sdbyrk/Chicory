@@ -6,6 +6,30 @@
 {% endif %} -->
 
 {% block content %}
+<h2>Filmler</h2>
+<div class="filter-btn">
+	<div class="dropdown button-group">
+  		<button class="btn btn-info" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    		<i class="fas fa-sort"></i>
+  		</button>
+ 		<div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton">
+ 			<a class="dropdown-item" href="{% url 'order' pk=0 %}" name="byName">İsme Göre Artan</a>
+ 			<a class="dropdown-item" href="{% url 'order' pk=1 %}" name="byName">İsme Göre Azalan</a>
+ 			<a class="dropdown-item" href="{% url 'order' pk=2 %}" name="byRate">Puana Göre Artan</a>
+ 			<a class="dropdown-item" href="{% url 'order' pk=3 %}" name="byRate">Puana Göre Azalan</a>
+  		</div>
+	</div>
+	<div class="dropdown button-group">
+  		<button class="btn btn-info" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    		<i class="fas fa-filter"></i>
+  		</button>
+ 		<div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton">
+ 			{% for genre in genres %}
+    			<a class="dropdown-item" href="{% url 'genre' pk=genre.pk %}">{{ genre.name }}</a>
+    		{% endfor %}
+  		</div>
+	</div>
+</div>
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
 	{% for movie in movies %}
 	<div class="col">
