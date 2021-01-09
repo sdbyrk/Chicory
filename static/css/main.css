@@ -135,7 +135,27 @@ option {
     max-height: 200px;
     overflow-x: hidden;
 }
-
+.addMovie input[type=text], .addMovie select{
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  resize: vertical;
+}
+.addMovie label {
+	margin-bottom: 10px;
+	margin-top: 10px;
+	display: block;
+	color : #5F9EA0;
+	font-weight:bold
+}
+.addMovie input[type=number]{
+	width: 10%;
+  	border: 1px solid #ccc;
+  	border-radius: 4px;
+  	resize: vertical;
+}
 @media screen and (max_height: 450px) {
 	.sidenav {padding-top: 15px;}
 	.sidenav a {font-size: 18px;}

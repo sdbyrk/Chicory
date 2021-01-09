@@ -1,0 +1,13 @@
+<div class="modal-header">
+	<h3>Oyuncu Ekle</h3>
+	<a class="btn" data-dismiss="modal"><i class="fas fa-times"></i></span></a>
+</div>
+<div class="modal-body">
+	<form method="POST" action="{% url 'addActor' %}">
+		{% csrf_token %}
+    	<label>Oyuncu Adı</label>
+    	<input type="text" name="actorName">
+
+    	<input type="submit" style="float:right" value="Ekle" class="btn btn-md btn-secondary"> 
+	</form>
+</div>

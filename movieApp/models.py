@@ -21,7 +21,7 @@ class Genre(models.Model):
 
 class Movie(models.Model):
 	title = models.CharField(max_length=50, null=False, verbose_name="Başlık")
-	poster = models.ImageField(null=True, blank=True, verbose_name="Poster")
+	poster = models.ImageField(null=True, blank=True, verbose_name="Poster", upload_to='images/')
 	rating = models.FloatField(null=True, blank=True, verbose_name="Puan")
 	director = models.ManyToManyField('movieApp.Director', verbose_name="Yönetmen")
 	cast = models.ManyToManyField('movieApp.Actor', verbose_name="Oyuncular")

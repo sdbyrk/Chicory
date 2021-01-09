@@ -1,0 +1,10 @@
+<div class="pagination">
+  <span class="step-links">
+    {% if movies.has_previous %}
+      <button class="btn btn-outline-info"><a href="?page={{ movies.previous_page_number }}">Previous</a></button>
+    {% endif %}
+    {% if movies.has_next %}
+      <button class="btn btn-outline-info"><a href="?page={{ movies.next_page_number }}">Next</a></button>
+    {% endif %}
+  </span>
+</div>

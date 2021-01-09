@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.decorators import user_passes_test
 
 from notifications.signals import notify
 import os.path
@@ -159,29 +162,44 @@ def getData(request):
 						actorObject = Actor.objects.create(name=actor)
 					movie.cast.add(actorObject)
 
-def index(request):
-	movies = Movie.objects.all()
+def paginate(request, datas):
+	paginator = Paginator(datas, 20)
+	page = request.GET.get('page', 1)
+	try:
+		data = paginator.page(page)
+	except PageNotAnInteger:
+		data = paginator.page(1)
+	except EmptyPage:
+		data = paginator.page(paginator.num_pages)
+
+	return data, page
+
+def index(request, pk=0):
+
+	allMovies = Movie.objects.all()
+
 	genres = Genre.objects.all()
+
+	if (pk != 0):
+		allMovies = order(request, allMovies, pk)
+
+	movies, page = paginate(request, allMovies)
 
 	return render(request, "movieApp/index.html",
-		{"movies": movies, "genres": genres})
+		{"movies": movies, "genres": genres, "page": page})
 
-def order(request, pk):
-	movies = Movie.objects.all()
-	genres = Genre.objects.all()
+def order(request, movies, pk):
 
-	if pk == 0:
-		movies = Movie.objects.all().order_by("title")
-	elif pk == 1:
-		movies = Movie.objects.all().order_by("-title")
+	if pk == 1:
+		movies = movies.order_by("title")
 	elif pk == 2:
-		movies = Movie.objects.all().order_by("rating")
+		movies = movies.order_by("-title")
+	elif pk == 3:
+		movies = movies.order_by("rating")
 	else: 
-		movies = Movie.objects.all().order_by("-rating")
+		movies = movies.order_by("-rating")
 
-
-	return render(request, "movieApp/index.html",
-		{"movies": movies, "genres": genres})
+	return movies
 
 def movie_detail(request, pk):
 	movie = get_object_or_404(Movie, pk=pk)
@@ -202,21 +220,27 @@ def actorMovies(request, pk):
 	filtered = get_object_or_404(Actor, pk=pk)
 	movies = Movie.objects.filter(cast__pk=pk)
 	genres = Genre.objects.all()
-	return render(request, "movieApp/filtered_page.html", {"filtered":filtered, "movies": movies, "genres": genres})
+	filteredType = "actor"
+	return render(request, "movieApp/filtered_page.html", {"filtered":filtered, "movies": movies, "genres": genres, "filteredType": filteredType})
 
 # Director's movies
 def directorMovies(request, pk):
 	filtered = get_object_or_404(Director, pk=pk)
 	movies = Movie.objects.filter(director__pk=pk)
 	genres = Genre.objects.all()
-	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies, "genres": genres})
+	filteredType = "director"
+	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies, "genres": genres, "filteredType": filteredType})
 
 # Movies by genre
-def genreMovies(request, pk):
+def genreMovies(request, pk, orderId=0):
 	filtered = get_object_or_404(Genre, pk=pk)
-	movies = Movie.objects.filter(genre__pk=pk)
+	allMovies = Movie.objects.filter(genre__pk=pk)
 	genres = Genre.objects.all()
-	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies, "genres": genres})
+	if(id != 0):
+		allMovies = order(request, allMovies, orderId)
+	filteredType = "genre"
+	movies, page = paginate(request, allMovies)
+	return render(request, "movieApp/filtered_page.html", {"filtered": filtered, "movies": movies, "genres": genres, "page": page, "filteredType": filteredType})
 
 def searchText(request):
 	query = request.GET.get('q')
@@ -225,13 +249,10 @@ def searchText(request):
 	actors = Actor.objects.all().filter(name__icontains=query)
 	directors = Director.objects.all().filter(name__icontains=query)
 	users = User.objects.exclude(username=request.user.username).all().filter(username__icontains=query)
-	print(users)
-	watchedMovies = []
-	return render(request, "movieApp/search_result.html", {"search": search, "movies":movies, "actors": actors, "directors": directors, "watchedMovies":watchedMovies, "users": users})
+	return render(request, "movieApp/search_result.html", {"search": search, "movies":movies, "actors": actors, "directors": directors, "users": users})
 
 #Recommending a movie to a followed user
 def recommendPage(request, pk):
-	print("Hello world")
 	member = Member.objects.filter(user=request.user).first()
 	movie = get_object_or_404(Movie, pk=pk)
 	relation = Relationship.objects.filter(member=member).first()
@@ -259,7 +280,7 @@ def recommendPage(request, pk):
 def recommendMovie(request, pk):
 	notification = request.user.notifications.filter(pk=pk).first()
 	movie = Movie.objects.filter(title=notification.action_object).first()
-	return movie_detail(request, movie.pk)
+	return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 #Add/remove the movie from the watchedMovies
 def watched(request, pk):
@@ -316,6 +337,76 @@ def later(request, pk):
 		watchLaters = member.watchLater.all()
 	recommend(request)
 	return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def addMovie(request):
+	actors = Actor.objects.all()
+	directors = Director.objects.all()
+	genres = Genre.objects.all()
+	if request.method == 'POST':
+		movieName = request.POST['movieName']
+		movie = Movie.objects.filter(title__iexact=movieName).first()
+		rating = request.POST['rating']
+		poster = '/media/images/' + request.POST['poster']
+		print(poster)
+		if not movie:
+			movie = Movie.objects.create(title=movieName, rating=rating, poster=poster)
+			directors = request.POST.getlist('directors')
+			actors = request.POST.getlist('actors')
+			genres = request.POST.getlist('genres')
+			for genre in genres:
+				genreObject = Genre.objects.filter(name=genre).first()
+				movie.genre.add(genreObject)
+
+			for director in directors:
+				directorObject = Director.objects.filter(name=director).first()
+				movie.director.add(directorObject)
+
+			for actor in actors:
+				actorObject = Actor.objects.filter(name=actor).first()
+				movie.cast.add(actorObject)
+			
+			movie.save()
+			message = movie.title + " filmini eklediniz."
+			messages.add_message(request, messages.SUCCESS, message)
+			return redirect('index')
+		
+		else:
+			messages.add_message(request, messages.ERROR, "Bu film zaten mevcut.")
+			return render(request, "movieApp/addMovie.html", {'actors': actors, 'directors': directors, 'genres': genres})
+	else:
+		return render(request, "movieApp/addMovie.html", {'actors': actors, 'directors': directors, 'genres': genres})
+
+@user_passes_test(lambda u: u.is_superuser)
+def addActor(request):
+	if request.method == 'POST':
+		actorName =request.POST['actorName']
+		actor = Actor.objects.filter(name__iexact=actorName).first()
+		if not actor:
+			actor = Actor.objects.create(name=actorName)
+			message = actorName + " oyuncusunu eklediniz."
+			messages.add_message(request, messages.SUCCESS, message)
+		else:
+			messages.add_message(request, messages.ERROR, "Bu oyuncu zaten mevcut.")
+		return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+	else:
+		return render(request, "movieApp/addActor.html")
+
+@user_passes_test(lambda u: u.is_superuser)
+def addDirector(request):
+	if request.method == 'POST':
+		directorName =request.POST['directorName']
+		director = Director.objects.filter(name__iexact=directorName).first()
+		if not director:
+			director = Director.objects.create(name=directorName)
+			message = directorName + " yönetmenini eklediniz."
+			messages.add_message(request, messages.SUCCESS, message)
+		else:
+			messages.add_message(request, messages.ERROR, "Bu yönetmen zaten mevcut.")
+		return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+	else:
+		return render(request, "movieApp/addDirector.html")
 
 #Suggesting movies by the system
 def recommend(request):

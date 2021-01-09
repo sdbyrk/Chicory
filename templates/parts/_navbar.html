@@ -18,6 +18,13 @@
 			{% else %}
 				<a href="{% url 'user_page' %}" title="Profil"><i class="far fa-user"></i></a>
 			{% endif %}
+			{% if request.user.is_superuser %}
+				{% if 'add' in request.path %}
+					<a href="{% url 'addMovie' %}" title="Add Movie"><i class="fas fa-plus-circle" style="color : #5F9EA0;"></i></a>
+				{% else %}
+					<a href="{% url 'addMovie' %}" title="Add Movie"><i class="fas fa-plus-circle"></i></a>
+				{% endif %}
+			{% endif %}
 			<a href="javascript:{document.getElementById('logout').submit()}" title="Çıkış"><i class="fas fa-sign-out-alt"></i></span></a>
 			<form action="{% url 'logout' %}" method="POST" id="logout">
 				{% csrf_token %}

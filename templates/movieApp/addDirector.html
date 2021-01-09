@@ -1,0 +1,13 @@
+<div class="modal-header">
+	<h3>Yönetmen Ekle</h3>
+	<a class="btn" data-dismiss="modal"><i class="fas fa-times"></i></span></a>
+</div>
+<div class="modal-body">
+	<form method="POST" action="{% url 'addDirector' %}">
+		{% csrf_token %}
+    	<label>Yönetmen Adı</label>
+    	<input type="text" name="directorName">
+
+    	<input type="submit" style="float:right" value="Ekle" class="btn btn-md btn-secondary"> 
+	</form>
+</div>

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="row">
+        <div class="card" style="width:100%;">
+            <div class="card-header">
+                <h1>Film Ekle</h1>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="addMovie">
+                        <label>Film Adı</label>
+                        <input type="text" name="movieName">
+                        <label>Yönetmenler</label>
+                        <select multiple id="directorBox" name="directors">
+                            <option disabled="true">Yönetmenler</option>
+                            {% for director in directors %}
+                                <option>{{ director.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <a title="Oyuncu Ekle" href="{% url 'addDirector' %}" data-toggle="modal" data-target="#addDirector"><input type="hidden"><i class="fas fa-plus"></i></a>
+                        <label>Oyuncular</label>
+                        <select multiple id="actorBox" name="actors">
+                            <option disabled="true">Oyuncular</option>
+                            {% for actor in actors %}
+                                <option>{{ actor.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <a title="Oyuncu Ekle" href="{% url 'addActor' %}" data-toggle="modal" data-target="#addActor"><input type="hidden"><i class="fas fa-plus"></i></a>
+                        <label>Türler</label>
+                        <select multiple id="genreBox" name="genres">
+                            <option disabled="true">Türler</option>
+                            {% for genre in genres %}
+                                <option>{{ genre.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>Poster</label>
+                        <input type="file" name="poster" accept="image/*">
+                        <label>IMDB puanı</label>
+                        <input type="number" name="rating" step="0.01">
+
+                        <input type="submit" style="float:right" value="Ekle" class="btn btn-md btn-secondary"> 
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade text-center" id="addActor" method="post">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade text-center" id="addDirector" method="post">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+<script>
+    $(document).ready(function(){
+        $("#actorBox").select2();
+        $("#directorBox").select2();
+        $("#genreBox").select2();
+    });
+</script>
+{% endblock %}
